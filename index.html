@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <title>CARING 0.3 | Smart Monitoring</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+      /* ================= ROOT & GLOBAL ================= */
+      :root {
+        --primary-blue: #00d2ff;
+        --dark-blue: #0056b3;
+        --green: #00ff88;
+        --glass: rgba(255, 255, 255, 0.35);
+        --border: rgba(255, 255, 255, 0.5);
+        --danger: #ff4646;
+        --text-dark: #003366;
+        --warning: #ffa000;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text-dark);
+        background: #e1f5fe;
+        background-image:
+          linear-gradient(rgba(225, 245, 254, 0.85), rgba(225, 245, 254, 0.85)),
+          url("logo.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        background-size: contain;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 480px;
+        margin: auto;
+        padding: 20px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 1s ease;
+      }
+      .container.loaded {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .glass {
+        background: var(--glass);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        box-shadow: 0 8px 32px rgba(0, 150, 255, 0.1);
+        padding: 20px;
+        margin-bottom: 15px;
+      }
+
+      /* ================= HOME STYLES ================= */
+      .home-title {
+        font-size: 26px;
+        font-weight: 900;
+        color: var(--dark-blue);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .home-subtitle {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--dark-blue);
+        opacity: 0.8;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+      }
+      .home-tagline {
+        font-size: 16px;
+        font-weight: 800;
+        color: #0277bd;
+        margin-bottom: 15px;
+        line-height: 1.3;
+      }
+      .home-desc {
+        font-size: 13.5px;
+        line-height: 1.6;
+        text-align: justify;
+        color: #37474f;
+        margin-bottom: 15px;
+      }
+      .feature-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+      }
+      .feature-list li {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #455a64;
+      }
+
+      /* ================= BATTERY UI ================= */
+      .battery-container {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 10px;
+        font-weight: bold;
+      }
+      .bat-shell {
+        width: 25px;
+        height: 12px;
+        border: 2px solid var(--dark-blue);
+        border-radius: 3px;
+        position: relative;
+        padding: 1px;
+      }
+      .bat-level {
+        height: 100%;
+        background: var(--green);
+        width: 100%;
+        transition: 0.5s;
+      }
+      .bat-shell::after {
+        content: "";
+        position: absolute;
+        right: -4px;
+        top: 2px;
+        width: 2px;
+        height: 4px;
+        background: var(--dark-blue);
+        border-radius: 0 1px 1px 0;
+      }
+
+      /* ================= REST OF UI ================= */
+      .diag-box {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        line-height: 1.4;
+        display: none;
+      }
+      .diag-alert {
+        background: #ffebee;
+        border: 1px solid var(--danger);
+        color: #b71c1c;
+        display: block;
+      }
+      .diag-normal {
+        background: #e8f5e9;
+        border: 1px solid #4caf50;
+        color: #1b5e20;
+        display: block;
+      }
+
+      .header {
+        text-align: center;
+        position: relative;
+        padding-top: 10px;
+      }
+      .header-logo {
+        width: 50px;
+      }
+      .nav-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 12px 5px;
+        border: none;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.6);
+        color: var(--dark-blue);
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 12px;
+        transition: 0.3s;
+      }
+      .tab-btn.active {
+        background: var(--primary-blue);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 210, 255, 0.3);
+      }
+      .selection {
+        display: flex;
+        justify-content: space-around;
+        padding: 10px;
+      }
+      .animal {
+        text-align: center;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: 0.4s;
+      }
+      .animal img {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        border: 3px solid white;
+        object-fit: cover;
+      }
+      .animal.active {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+      .card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+      }
+      .value {
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--dark-blue);
+      }
+      .status {
+        text-align: center;
+        padding: 12px;
+        border-radius: 15px;
+        font-weight: 800;
+        font-size: 11px;
+      }
+      .safe {
+        background: #c8e6c9;
+        color: #1b5e20;
+      }
+      .alert {
+        background: #ffcdd2;
+        color: #b71c1c;
+      }
+      .standby {
+        background: #e3f2fd;
+        color: #01579b;
+      }
+
+      .time-info {
+        font-size: 10px;
+        text-align: center;
+        color: var(--dark-blue);
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      #loader-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #e0f7fa;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 30000;
+      }
+      .loader-bar-container {
+        width: 150px;
+        height: 4px;
+        background: rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .loader-bar {
+        width: 0%;
+        height: 100%;
+        background: var(--primary-blue);
+        animation: progress 2.5s forwards;
+      }
+      @keyframes progress {
+        to {
+          width: 100%;
+        }
+      }
+      .page {
+        display: none;
+      }
+      .page.active {
+        display: block;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loader-wrapper">
+      <img src="logo.png" alt="Caring Logo" width="80" />
+      <div class="loader-bar-container"><div class="loader-bar"></div></div>
+    </div>
+    <div
+      id="verify-modal"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 51, 102, 0.5);
+        backdrop-filter: blur(8px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 20000;
+      "
+    >
+      <div
+        class="modal-content glass"
+        style="width: 80%; max-width: 300px; text-align: center"
+      >
+        <h3>Ubah Pantauan</h3>
+        <p id="verify-text">Pilih hewan...</p>
+        <div style="display: flex; gap: 10px; margin-top: 15px">
+          <button
+            class="tab-btn"
+            style="background: #cfd8dc; flex: 1"
+            onclick="closeModal()"
+          >
+            Batal
+          </button>
+          <button class="tab-btn active" style="flex: 1" id="confirm-btn">
+            Ya
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="container" id="main-container">
+      <div class="header glass">
+        <div class="battery-container">
+          <span id="bat-text">100%</span>
+          <div class="bat-shell">
+            <div id="bat-level" class="bat-level"></div>
+          </div>
+        </div>
+        <img src="logo.png" alt="Logo" class="header-logo" />
+        <div
+          style="font-weight: 900; letter-spacing: 2px; color: var(--dark-blue)"
+        >
+          CARING 0.3
+        </div>
+        <div
+          id="date-display"
+          style="
+            font-size: 10px;
+            color: #546e7a;
+            font-weight: bold;
+            margin-top: 5px;
+          "
+        >
+          -
+        </div>
+        <div
+          id="clock"
+          style="font-size: 11px; font-family: monospace; color: #0277bd"
+        >
+          00:00:00
+        </div>
+      </div>
+
+      <div class="nav-tabs">
+        <button
+          id="btn-home"
+          class="tab-btn active"
+          onclick="switchPage('home', this)"
+        >
+          🏠 Home
+        </button>
+        <button
+          id="btn-monitor"
+          class="tab-btn"
+          onclick="switchPage('rt', this)"
+        >
+          📊 Monitor
+        </button>
+        <button
+          id="btn-history"
+          class="tab-btn"
+          onclick="switchPage('hs', this)"
+        >
+          📜 Riwayat
+        </button>
+      </div>
+
+      <div id="home" class="page active">
+        <div class="glass">
+          <div class="home-title">🐄 CARING</div>
+          <div class="home-subtitle">
+            Smart Livestock Health Monitoring System
+          </div>
+          <div class="home-tagline">
+            Solusi Cerdas Deteksi Dini Penyakit Ternak Berbasis IoT
+          </div>
+
+          <p class="home-desc">
+            Di era peternakan modern, kesehatan ternak adalah kunci
+            produktivitas dan keberlanjutan usaha. <b>CARING</b> hadir sebagai
+            inovasi sistem monitoring kesehatan ternak yang mampu mendeteksi
+            gejala penyakit sejak tahap awal melalui pemantauan suhu tubuh,
+            aktivitas gerak, dan intensitas pernapasan secara real-time.
+          </p>
+
+          <ul class="feature-list">
+            <li>✅ Monitoring Real-Time IoT</li>
+            <li>✅ Deteksi Dini Gejala Penyakit</li>
+            <li>✅ Pemantauan Suhu, Aktivitas & Suara</li>
+            <li>✅ Analisis Data Akurat</li>
+          </ul>
+
+          <button
+            class="tab-btn active"
+            style="
+              width: 100%;
+              margin-top: 10px;
+              padding: 15px;
+              font-size: 14px;
+              cursor: pointer;
+            "
+            onclick="goToMonitor()"
+          >
+            Mulai Pemantauan Ternak →
+          </button>
+        </div>
+      </div>
+
+      <div id="rt" class="page">
+        <div class="time-info">
+          🕒 Waktu Monitoring Efektif: 06-07, 12-13, 18-19
+        </div>
+        <div class="selection glass">
+          <div
+            class="animal active"
+            id="animal-SAPI"
+            onclick="requestSetAnimal('SAPI')"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&w=150&q=80"
+            />
+            <div style="margin-top: 5px; font-size: 10px; font-weight: bold">
+              SAPI
+            </div>
+          </div>
+          <div
+            class="animal"
+            id="animal-KAMBING"
+            onclick="requestSetAnimal('KAMBING')"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&w=150&q=80"
+            />
+            <div style="margin-top: 5px; font-size: 10px; font-weight: bold">
+              KAMBING
+            </div>
+          </div>
+        </div>
+
+        <div class="card glass">
+          <span>🌡️ SUHU</span><span class="value" id="suhu">--</span>
+        </div>
+        <div class="card glass">
+          <span>🏃 AKTIVITAS</span><span class="value" id="aktivitas">--</span>
+        </div>
+        <div class="card glass">
+          <span>🔊 SUARA</span><span class="value" id="suara">--</span>
+        </div>
+        <div id="status" class="status standby">MENUNGGU DATA...</div>
+
+        <div id="diagnosis" class="diag-box">
+          <b>Diagnosa:</b> <span id="diag-text">Memproses data...</span>
+        </div>
+      </div>
+
+      <div id="hs" class="page glass">
+        <h3 style="margin-top: 0; font-size: 14px">
+          Rekapan Data (Waktu Efektif)
+        </h3>
+        <div style="max-height: 250px; overflow-y: auto">
+          <table id="history-table">
+            <thead>
+              <tr>
+                <th>Tanggal & Jam</th>
+                <th>Suhu</th>
+                <th>Akt</th>
+                <th>Suara</th>
+                <th>Hewan</th>
+              </tr>
+            </thead>
+            <tbody id="history"></tbody>
+          </table>
+        </div>
+        <button
+          onclick="exportToPDF()"
+          class="tab-btn active"
+          style="width: 100%; margin-top: 15px; padding: 12px"
+        >
+          📄 Download Laporan PDF
+        </button>
+      </div>
+    </div>
+    <script>
+      let currentAnimal = "SAPI";
+      let pendingAnimal = "";
+      let battery = 100;
+
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.getElementById("loader-wrapper").style.opacity = "0";
+          setTimeout(() => {
+            document.getElementById("loader-wrapper").style.visibility =
+              "hidden";
+            document.getElementById("main-container").classList.add("loaded");
+          }, 800);
+        }, 1500);
+      });
+
+      // Update Jam & Tanggal Header
+      setInterval(() => {
+        let now = new Date();
+        document.getElementById("clock").innerText =
+          now.toLocaleTimeString("id-ID");
+        document.getElementById("date-display").innerText =
+          now.toLocaleDateString("id-ID", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+      }, 1000);
+
+      function switchPage(id, btn) {
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        btn.classList.add("active");
+        if (id === "hs") loadHistory();
+      }
+
+      function goToMonitor() {
+        const monitorBtn = document.getElementById("btn-monitor");
+        switchPage("rt", monitorBtn);
+      }
+
+      function requestSetAnimal(name) {
+        if (name === currentAnimal) return;
+        pendingAnimal = name;
+        const animalLabel = name === "SAPI" ? "Sapi" : "Kambing";
+        document.getElementById("verify-text").innerText =
+          `Ganti pantauan ke ${animalLabel}?`;
+        document.getElementById("verify-modal").style.display = "flex";
+      }
+
+      function closeModal() {
+        document.getElementById("verify-modal").style.display = "none";
+      }
+
+      document.getElementById("confirm-btn").onclick = function () {
+        currentAnimal = pendingAnimal;
+        document
+          .querySelectorAll(".animal")
+          .forEach((a) => a.classList.remove("active"));
+        document
+          .getElementById(`animal-${currentAnimal}`)
+          .classList.add("active");
+        closeModal();
+      };
+
+      function updateData() {
+        if (battery > 5) battery -= 0.01;
+        document.getElementById("bat-text").innerText =
+          Math.floor(battery) + "%";
+        document.getElementById("bat-level").style.width = battery + "%";
+        document.getElementById("bat-level").style.backgroundColor =
+          battery < 20 ? "var(--danger)" : "var(--green)";
+
+        let baseSuhu = currentAnimal === "SAPI" ? 38.5 : 39.0;
+        let suhu = (baseSuhu + (Math.random() * 3 - 1)).toFixed(1);
+        let aktivitas = (Math.random() * 10).toFixed(1);
+        let suara = (40 + Math.random() * 50).toFixed(0);
+
+        document.getElementById("suhu").innerText = suhu + "°C";
+        document.getElementById("aktivitas").innerText = aktivitas;
+        document.getElementById("suara").innerText = suara + " dB";
+
+        const status = document.getElementById("status");
+        const diagBox = document.getElementById("diagnosis");
+        const diagText = document.getElementById("diag-text");
+
+        let diagnosis = "";
+        let isDanger = false;
+
+        if (suhu > 40.5) {
+          diagnosis =
+            "Suhu sangat tinggi! Indikasi Gejala PMK atau Infeksi Akut.";
+          isDanger = true;
+        } else if (suara > 85) {
+          diagnosis = "Suara tinggi! Hewan mungkin stres/batuk.";
+          isDanger = true;
+        } else if (suhu > 39.5 && aktivitas < 3) {
+          diagnosis = "Demam & Lemas. Kemungkinan BEF atau radang paru.";
+          isDanger = true;
+        } else if (suhu < 37.5) {
+          diagnosis = "Suhu rendah (Hipotermia). Segera beri penghangat.";
+          isDanger = true;
+        } else {
+          diagnosis = "Kondisi Stabil. Hewan sehat dan aktif.";
+          isDanger = false;
+        }
+
+        if (isDanger) {
+          status.className = "status alert";
+          status.innerText = `⚠ PERINGATAN: ${currentAnimal} TIDAK NORMAL`;
+          diagBox.className = "diag-box diag-alert";
+        } else {
+          status.className = "status safe";
+          status.innerText = `✅ KONDISI ${currentAnimal} NORMAL`;
+          diagBox.className = "diag-box diag-normal";
+        }
+        diagText.innerText = diagnosis;
+
+        let now = new Date();
+        let hour = now.getHours();
+        let isEffectiveTime =
+          (hour >= 6 && hour < 7) ||
+          (hour >= 12 && hour < 13) ||
+          (hour >= 18 && hour < 19);
+
+        // Simpan data setiap menit di detik ke-0 pada waktu efektif
+        if (isEffectiveTime && now.getSeconds() === 0) {
+          saveHistory(suhu, aktivitas, suara);
+        }
+      }
+      setInterval(updateData, 1000);
+
+      function saveHistory(t, a, s) {
+        let h = JSON.parse(localStorage.getItem("caring_log") || "[]");
+        let now = new Date();
+        // Simpan tanggal dan jam
+        let timeStamp =
+          now.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+          }) +
+          " " +
+          now.toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        h.unshift({ time: timeStamp, t, a, s, animal: currentAnimal });
+        if (h.length > 100) h.pop();
+        localStorage.setItem("caring_log", JSON.stringify(h));
+      }
+
+      function loadHistory() {
+        let h = JSON.parse(localStorage.getItem("caring_log") || "[]");
+        document.getElementById("history").innerHTML =
+          h
+            .map(
+              (i) =>
+                `<tr><td>${i.time}</td><td>${i.t}°C</td><td>${i.a}</td><td>${i.s}dB</td><td>${i.animal}</td></tr>`,
+            )
+            .join("") ||
+          "<tr><td colspan='5' style='text-align:center'>Belum ada data di waktu efektif</td></tr>";
+      }
+
+      function exportToPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let now = new Date().toLocaleDateString("id-ID", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+        doc.setFontSize(16);
+        doc.text("Laporan Kesehatan CARING", 14, 15);
+        doc.setFontSize(10);
+        doc.text("Tanggal Unduh: " + now, 14, 22);
+
+        doc.autoTable({
+          html: "#history-table",
+          startY: 30,
+          theme: "grid",
+          headStyles: { fillStyle: [0, 86, 179] },
+        });
+
+        doc.save("Laporan_Caring_" + now.replace(/ /g, "_") + ".pdf");
+      }
+
+      updateData();
+    </script>
+  </body>
+</html>
