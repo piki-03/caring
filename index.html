@@ -67,28 +67,49 @@
             </div>
         </div>
 
-        <div id="rt" class="page">
-            <div class="time-info">🕒 Waktu Monitoring Efektif: 06-07, 12-13, 18-19</div>
-            <div class="selection glass">
-                <div class="animal active" id="animal-SAPI" onclick="requestSetAnimal('SAPI')">
-                    <img src="https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&w=150&q=80">
-                    <div class="animal-label">SAPI</div>
-                </div>
-                <div class="animal" id="animal-KAMBING" onclick="requestSetAnimal('KAMBING')">
-                    <img src="https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&w=150&q=80">
-                    <div class="animal-label">KAMBING</div>
-                </div>
+      <div id="rt" class="page">
+    <div id="setup-monitor" class="glass" style="padding: 20px; text-align: center;">
+        <h3>Konfigurasi Monitor Baru</h3>
+        <p>Pilih jenis dan beri nama hewan di kandang:</p>
+        
+        <div class="selection" style="justify-content: center; margin-bottom: 20px;">
+            <div class="animal active" id="setup-SAPI" onclick="selectType('SAPI')">
+                <img src="https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&w=150&q=80">
+                <div class="animal-label">SAPI</div>
             </div>
-
-            <div class="card glass"><span>🌡️ SUHU</span><span class="value" id="suhu">--</span></div>
-            <div class="card glass"><span>🏃 AKTIVITAS</span><span class="value" id="aktivitas">--</span></div>
-            <div class="card glass"><span>🔊 SUARA</span><span class="value" id="suara">--</span></div>
-            <div id="status" class="status standby">MENUNGGU DATA...</div>
-
-            <div id="diagnosis" class="diag-box">
-                <b>Diagnosa:</b> <span id="diag-text">Memproses data...</span>
+            <div class="animal" id="setup-KAMBING" onclick="selectType('KAMBING')">
+                <img src="https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&w=150&q=80">
+                <div class="animal-label">KAMBING</div>
             </div>
         </div>
+
+        <input type="text" id="input-nama-hewan" placeholder="Contoh: Sapi A / Si Putih" 
+               style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 15px;">
+        
+        <button class="tab-btn active" style="width: 100%;" onclick="startMonitoringSession()">Buka Monitor Sekarang</button>
+    </div>
+
+    <div id="active-monitor" style="display: none;">
+        <div class="glass" style="padding: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <b id="display-nama">--</b> 
+                <span id="display-jenis" style="font-size: 0.8rem; opacity: 0.7;">(Jenis)</span>
+            </div>
+            <button onclick="resetMonitor()" style="font-size: 0.7rem; background: #ff5252; color: white; border: none; padding: 5px 10px; border-radius: 5px;">Ganti Hewan</button>
+        </div>
+
+        <div class="time-info">🕒 Waktu Efektif: 06-07, 12-13, 18-19</div>
+        
+        <div class="card glass"><span>🌡️ SUHU</span><span class="value" id="suhu">--</span></div>
+        <div class="card glass"><span>🏃 AKTIVITAS</span><span class="value" id="aktivitas">--</span></div>
+        <div class="card glass"><span>🔊 SUARA</span><span class="value" id="suara">--</span></div>
+        <div id="status" class="status standby">MENUNGGU DATA...</div>
+
+        <div id="diagnosis" class="diag-box">
+            <b>Diagnosa:</b> <span id="diag-text">Memproses data...</span>
+        </div>
+    </div>
+</div>
 
         <div id="hs" class="page glass">
             <h3 style="margin-top:0; font-size: 14px;">Rekapan Data (Waktu Efektif)</h3>
