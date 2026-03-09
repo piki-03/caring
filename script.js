@@ -80,7 +80,6 @@ async function initApp() {
 }
 
 // ================= CORE LOGIC =================
-
 async function fetchInitialData() {
     try {
         const { data, error } = await supabaseClient
@@ -113,7 +112,9 @@ function renderData(data) {
     let suara = parseInt(data.suara || 0);
     let batLevel = data.baterai || 100; 
 
-    let labelAktivitas = (aktivitasRaw < 3) ? "Lemas" : (aktivitasRaw <= 7 ? "Aktif" : "Agresif");
+    let labelAktivitas = (aktivitasRaw < 5) ? "Lemas" : 
+                        (aktivitasRaw >= 9 && aktivitasRaw <= 10) ? "Aktif" : 
+                        (aktivitasRaw > 10) ? "Agresif" : "Normal";
 
     document.getElementById("suhu").innerText = suhu + "°C";
     document.getElementById("aktivitas").innerText = labelAktivitas; 
