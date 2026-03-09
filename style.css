@@ -168,9 +168,10 @@ th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.0
 }
 
 /* Hover tombol Batal */
-#download-modal .tab-btn[style*="background:#cfd8dc"]:hover {
-    background-color: #b0bec5 !important;
-    color: #333;
+#download-modal .tab-btn[style*="background:#cfd8dc"] {
+    background-color: #eeeeee !important; /* Abu-abu sangat muda */
+    color: #333 !important;
+    border: 1px solid #ccc !important;
 }
 .page { display: none; }
 .page.active { display: block; }
