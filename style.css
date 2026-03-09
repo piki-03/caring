@@ -113,5 +113,45 @@ th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.0
     display: none; justify-content: center; align-items: center; z-index: 20000;
 }
 
+/* LAPORAN */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* Efek Hover secara umum untuk tombol di dalam modal */
+#download-modal .tab-btn {
+    transition: all 0.3s ease; /* Membuat transisi perubahan terasa halus */
+    cursor: pointer;
+    border: none;
+    transform: scale(1);
+}
+
+#download-modal .tab-btn:hover {
+    transform: scale(1.03); /* Sedikit membesar saat disentuh */
+    filter: brightness(1.1); /* Membuat warna sedikit lebih terang */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Menambahkan bayangan lembut */
+}
+
+/* Hover khusus tombol Sapi (Hijau) */
+#download-modal .tab-btn.active:nth-child(1):hover {
+    background-color: #388e3c !important; /* Hijau lebih gelap */
+}
+
+/* Hover khusus tombol Kambing (Cokelat) */
+#download-modal .tab-btn[style*="background:#6d4c41"]:hover {
+    background-color: #5d4037 !important; /* Cokelat lebih gelap */
+}
+
+/* Hover tombol Batal */
+#download-modal .tab-btn[style*="background:#cfd8dc"]:hover {
+    background-color: #b0bec5 !important;
+    color: #333;
+}
 .page { display: none; }
 .page.active { display: block; }

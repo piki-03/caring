@@ -14,7 +14,7 @@
 <body>
 
     <div id="loader-wrapper">
-        <img src="logo.png" alt="Caring Logo" width="80">
+        <img src="image/logo.png" alt="Caring Logo" width="450">
         <div class="loader-bar-container">
             <div class="loader-bar"></div>
         </div>
@@ -34,7 +34,7 @@
     <div class="container" id="main-container">
         <div class="header glass">
          
-            <img src="logo.png" alt="Logo" class="header-logo">
+            <img src="image/logo.png" alt="Logo" class="header-logo">
             <div class="brand-name">CARING 0.3</div>
             <div id="date-display">-</div>
             <div id="clock">00:00:00</div>
@@ -108,19 +108,30 @@
     </div>
 </div>
 
-        <div id="hs" class="page glass">
-            <h3 style="margin-top:0; font-size: 14px;">Rekapan Data (Waktu Efektif)</h3>
-            <div class="table-scroll">
-                <table id="history-table">
-                    <thead>
-                        <tr><th>Waktu</th><th>Suhu</th><th>Akt</th><th>Suara</th><th>Hewan</th></tr>
-                    </thead>
-                    <tbody id="history"></tbody>
-                </table>
-            </div>
-            <button onclick="exportToPDF()" class="tab-btn active btn-download">📄 Download Laporan PDF</button>
+      <div id="hs" class="page glass">
+    <h3 style="margin-top:0; font-size: 14px;">Rekapan Data (Waktu Efektif)</h3>
+    <div class="table-scroll">
+        <table id="history-table">
+            <thead>
+                <tr><th>Waktu</th><th>Suhu</th><th>Akt</th><th>Suara</th><th>Hewan</th></tr>
+            </thead>
+            <tbody id="history"></tbody>
+        </table>
+    </div>
+    <button onclick="openDownloadModal()" class="tab-btn active btn-download">📄 Download Laporan PDF</button>
+</div>
+
+<div id="download-modal" class="modal" style="display:none;">
+    <div class="modal-content glass">
+        <h3>Pilih Jenis Laporan</h3>
+        <p>Data mana yang ingin Anda unduh?</p>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+            <button class="tab-btn active" onclick="exportToPDF('SAPI')">🐄 Laporan Sapi</button>
+            <button class="tab-btn active" style="background:#6d4c41;" onclick="exportToPDF('KAMBING')">🐐 Laporan Kambing</button>
+            <button class="tab-btn" style="background:#cfd8dc;" onclick="closeDownloadModal()">Batal</button>
         </div>
     </div>
+</div>
 
     <script src="script.js"></script>
 </body>
