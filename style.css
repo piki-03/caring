@@ -123,7 +123,26 @@ th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.0
     align-items: center;
     z-index: 2000;
 }
+/* Update Modal Pilihan Laporan */
+#download-modal .modal-content {
+    background: #a1a1a1 !important; /* Warna putih solid */
+    opacity: 1 !important;          /* Pastikan tidak ada transparansi */
+    backdrop-filter: none !important; /* Menghilangkan efek blur agar tidak tabrakan */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Menambah bayangan agar lebih menonjol */
+    border: 1px solid #ddd;         /* Garis tepi halus */
+}
 
+/* Mengatur teks judul di dalam modal agar lebih jelas */
+#download-modal h3 {
+    color: #333 !important;
+    margin-bottom: 10px;
+}
+
+/* Mengatur teks deskripsi */
+#download-modal p {
+    color: #222121 !important;
+    margin-bottom: 20px;
+}
 /* Efek Hover secara umum untuk tombol di dalam modal */
 #download-modal .tab-btn {
     transition: all 0.3s ease; /* Membuat transisi perubahan terasa halus */
