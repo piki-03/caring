@@ -5,6 +5,29 @@ let intervalSensor = null;
 let batPercent = 100;
 let lastSaveTime = 0;
 
+// Tambahkan library di index.html
+// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+const supabase = supabase.createClient('URL_SUPABASE_ANDA', 'KEY_ANON_ANDA');
+
+// Fungsi untuk ambil data dari Supabase secara Realtime
+function listenToHardware() {
+    supabase
+      .channel('sensor_updates')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'monitoring_ternak' }, payload => {
+          const data = payload.new;
+          
+          // Update UI CARING dengan data asli dari sensor
+          document.getElementById('suhu').innerText = data.suhu_objek + " °C";
+          document.getElementById('aktivitas').innerText = data.skor_aktivitas;
+          document.getElementById('pernapasan').innerText = data.laju_napas;
+          
+          // Jalankan diagnosa otomatis
+          diagnosa(data.suhu_objek, data.skor_aktivitas, data.laju_napas);
+      })
+      .subscribe();
+}
+
 // Initialize App
 window.onload = () => {
     setTimeout(() => {
