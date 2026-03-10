@@ -1,177 +1,105 @@
-/* ================= ROOT & GLOBAL ================= */
 :root {
     --primary-blue: #00d2ff;
     --dark-blue: #0056b3;
-    --green: #00ff88;
-    --glass: rgba(255, 255, 255, 0.35);
+    --glass: rgba(255, 255, 255, 0.4);
     --border: rgba(255, 255, 255, 0.5);
     --danger: #ff4646;
     --text-dark: #003366;
-    --warning: #ffa000;
+    --excel-green: #2e7d32;
+    --battery-green: #4caf50;
+    --pdf-red: #b71c1c;
 }
 
 body { 
     margin: 0; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    font-family: 'Segoe UI', sans-serif; 
     color: var(--text-dark); 
     background: #e1f5fe;
-    background-image: linear-gradient(rgba(225, 245, 254, 0.85), rgba(225, 245, 254, 0.85)), url('logo.png');
+    background-image: linear-gradient(rgba(225,245,254,0.9),rgba(225,245,254,0.9)), url('logo.png');
     background-repeat: no-repeat; 
     background-position: center; 
     background-attachment: fixed; 
     background-size: contain;
-    min-height: 100vh; 
-    overflow-x: hidden;
 }
 
-/* ================= CONTAINERS ================= */
-.container { max-width: 480px; margin: auto; padding: 20px; opacity: 0; transform: translateY(20px); transition: all 1s ease; }
+/* Loader */
+#loader-wrapper {
+    position: fixed; width: 100%; height: 100%; background: #e0f7fa;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
+}
+.loader-bar-container { width: 150px; height: 4px; background: rgba(0,0,0,0.1); margin-top: 20px; border-radius: 10px; overflow: hidden; }
+.loader-bar { width: 0%; height: 100%; background: var(--primary-blue); animation: progress 2s forwards; }
+
+@keyframes progress { to { width: 100%; } }
+
+/* Layout */
+.container { max-width: 480px; margin: auto; padding: 20px; opacity: 0; transform: translateY(20px); transition: 1s; }
 .container.loaded { opacity: 1; transform: translateY(0); }
 
 .glass { 
-    background: var(--glass); 
-    backdrop-filter: blur(15px); 
-    border: 1px solid var(--border); 
-    border-radius: 22px; 
-    box-shadow: 0 8px 32px rgba(0, 150, 255, 0.1); 
-    padding: 20px; 
-    margin-bottom: 15px;
+    background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border);
+    border-radius: 22px; box-shadow: 0 8px 32px rgba(0,150,255,0.1); padding: 20px; margin-bottom: 15px; 
 }
 
-/* ================= HEADER & BATTERY ================= */
-.header { text-align: center; position: relative; padding-top: 10px; }
-.header-logo { width: 50px; }
-.brand-name { font-weight: 900; letter-spacing: 2px; color: var(--dark-blue); }
-#date-display { font-size: 10px; color: #546e7a; font-weight: bold; margin-top: 5px; }
-#clock { font-size: 11px; font-family: monospace; color: #0277bd; }
+.header { text-align: center; }
+.brand-title { font-weight: 900; color: var(--dark-blue); }
+#clock { font-size: 11px; font-family: monospace; }
 
-.battery-container { position: absolute; top: 15px; right: 20px; display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: bold; }
-.bat-shell { width: 25px; height: 12px; border: 2px solid var(--dark-blue); border-radius: 3px; position: relative; padding: 1px; }
-.bat-level { height: 100%; background: var(--green); width: 100%; transition: 0.5s; }
-.bat-shell::after { content: ''; position: absolute; right: -4px; top: 2px; width: 2px; height: 4px; background: var(--dark-blue); border-radius: 0 1px 1px 0; }
-
-/* ================= TABS & BUTTONS ================= */
+/* Tabs */
 .nav-tabs { display: flex; gap: 8px; margin-bottom: 15px; }
-.tab-btn { flex: 1; padding: 12px 5px; border: none; border-radius: 15px; background: rgba(255,255,255,0.6); color: var(--dark-blue); cursor: pointer; font-weight: 700; font-size: 12px; transition: 0.3s; }
-.tab-btn.active { background: var(--primary-blue); color: white; box-shadow: 0 4px 12px rgba(0, 210, 255, 0.3); }
-.btn-start { width: 100%; margin-top: 10px; padding: 15px; font-size: 14px; }
-.btn-download { width:100%; margin-top:15px; padding: 12px; }
+.tab-btn { 
+    flex: 1; padding: 12px; border: none; border-radius: 15px; background: rgba(255,255,255,0.6);
+    font-weight: 700; font-size: 11px; cursor: pointer; transition: 0.3s; 
+}
+.tab-btn.active { background: var(--primary-blue); color: white; }
 
+/* Forms */
+.input-box { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; box-sizing: border-box; }
 
-.table-scroll {
-    max-height: 300px;
-    overflow-y: auto;
-    border-radius: 8px;
-    margin-bottom: 10px;
+/* Animal Card */
+.animal-card { 
+    display: flex; justify-content: space-between; align-items: center; background: white;
+    padding: 12px; border-radius: 15px; margin-bottom: 10px; border-left: 5px solid var(--primary-blue); 
+    transition: 0.2s; cursor: pointer; 
+}
+.animal-card:active { transform: scale(0.98); }
+.btn-del-animal { background: none; border: none; color: var(--danger); font-size: 18px; cursor: pointer; padding: 5px 10px; }
+
+/* Monitoring Elements */
+.monitor-header { text-align: center; background: var(--dark-blue) !important; color: white; padding: 15px; }
+.card { display: flex; justify-content: space-between; padding: 12px 15px; }
+.value { font-size: 20px; font-weight: 900; color: var(--dark-blue); }
+
+.battery-container { display: flex; align-items: center; justify-content: center; gap: 5px; margin-bottom: 10px; font-size: 12px; font-weight: bold; }
+.battery-shell { width: 30px; height: 15px; border: 2px solid white; border-radius: 3px; position: relative; padding: 1px; }
+.battery-level { height: 100%; background: var(--battery-green); width: 100%; transition: 0.5s; }
+.battery-shell::after { content: ''; position: absolute; right: -4px; top: 3px; width: 3px; height: 5px; background: white; border-radius: 0 1px 1px 0; }
+
+.status { text-align: center; padding: 10px; border-radius: 15px; font-weight: 800; font-size: 12px; margin-top: 10px; transition: 0.3s; background: #eee; }
+.pulse-danger { animation: pulse-red 1.5s infinite; }
+
+@keyframes pulse-red { 
+    0% { box-shadow: 0 0 0 0 rgba(255, 70, 70, 0.7); } 
+    70% { box-shadow: 0 0 0 10px rgba(255, 70, 70, 0); } 
+    100% { box-shadow: 0 0 0 0 rgba(255, 70, 70, 0); } 
 }
 
-/* ================= HOME PAGE ================= */
-.home-title { font-size: 26px; font-weight: 900; color: var(--dark-blue); margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
-.home-subtitle { font-size: 14px; font-weight: 700; color: var(--dark-blue); opacity: 0.8; margin-bottom: 15px; text-transform: uppercase; }
-.home-tagline { font-size: 16px; font-weight: 800; color: #0277bd; margin-bottom: 15px; line-height: 1.3; }
-.home-desc { font-size: 13.5px; line-height: 1.6; text-align: justify; color: #37474f; margin-bottom: 15px; }
-.feature-list { list-style: none; padding: 0; margin-bottom: 20px; }
-.feature-list li { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: #455a64; }
+.diag-box { margin-top: 10px; padding: 15px; border-radius: 15px; font-size: 13px; line-height: 1.4; border: 1px solid var(--border); }
+.normal-bg { background: #e8f5e9; color: #1b5e20; }
+.alert-bg { background: #ffebee; color: #b71c1c; }
+#diag-reason { display: block; margin-top: 5px; font-style: italic; opacity: 0.8; }
 
-/* ================= MONITOR PAGE ================= */
-.time-info { font-size: 10px; text-align: center; color: var(--dark-blue); margin-bottom: 10px; font-weight: bold;}
-.selection { display: flex; justify-content: space-around; padding: 10px; }
-.animal { text-align: center; cursor: pointer; opacity: 0.5; transition: 0.4s; }
-.animal img { width: 65px; height: 65px; border-radius: 50%; border: 3px solid white; object-fit: cover; }
-.animal.active { opacity: 1; transform: scale(1.1); }
-.animal-label { margin-top: 5px; font-size: 10px; font-weight: bold; }
+/* History Table */
+.export-group { display: flex; gap: 5px; margin-bottom: 12px; }
+.btn-export { color: white; border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 10px; flex: 1; }
+.bg-excel { background: var(--excel-green); }
+.bg-pdf { background: var(--pdf-red); }
+.bg-reset { background: #555; }
 
-.card { display: flex; justify-content: space-between; align-items: center; padding: 15px; }
-.value { font-size: 22px; font-weight: 900; color: var(--dark-blue); }
-.status { text-align: center; padding: 12px; border-radius: 15px; font-weight: 800; font-size: 11px; }
-.safe { background: #c8e6c9; color: #1b5e20; }
-.alert { background: #ffcdd2; color: #b71c1c; }
-.standby { background: #e3f2fd; color: #01579b; }
+.history-table { width: 100%; border-collapse: collapse; font-size: 10px; background: white; }
+.history-table th { background: var(--dark-blue); color: white; padding: 8px; }
+.history-table td { padding: 8px; border-bottom: 1px solid #eee; text-align: center; }
 
-.diag-box { margin-top: 15px; padding: 12px; border-radius: 12px; font-size: 13px; line-height: 1.4; display: none; }
-.diag-alert { background: #ffebee; border: 1px solid var(--danger); color: #b71c1c; display: block; }
-.diag-normal { background: #e8f5e9; border: 1px solid #4caf50; color: #1b5e20; display: block; }
-
-/* ================= HISTORY PAGE ================= */
-.table-scroll { max-height: 250px; overflow-y: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 10px; }
-th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05); }
-
-/* ================= LOADER & MODAL ================= */
-#loader-wrapper {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #e0f7fa; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 30000;
-    transition: 0.8s;
-}
-.loader-bar-container { width: 150px; height: 4px; background: rgba(0,0,0,0.1); margin-top: 20px; border-radius: 10px; overflow: hidden; }
-.loader-bar { width: 0%; height: 100%; background: var(--primary-blue); animation: progress 2.5s forwards; }
-@keyframes progress { to { width: 100%; } }
-
-#verify-modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0, 51, 102, 0.5); backdrop-filter: blur(8px); 
-    display: none; justify-content: center; align-items: center; z-index: 20000;
-}
-
-/* LAPORAN */
-.modal {
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-/* Update Modal Pilihan Laporan */
-#download-modal .modal-content {
-    background: #a1a1a1 !important; /* Warna putih solid */
-    opacity: 1 !important;          /* Pastikan tidak ada transparansi */
-    backdrop-filter: none !important; /* Menghilangkan efek blur agar tidak tabrakan */
-    box-shadow: 0 5px 10px rgba(0,0,0,0.3); /* Menambah bayangan agar lebih menonjol */
-    border: 1px solid #ddd;         /* Garis tepi halus */
-}
-
-/* Mengatur teks judul di dalam modal agar lebih jelas */
-#download-modal h3 {
-    color: #333 !important;
-    margin-bottom: 10px;
-}
-
-/* Mengatur teks deskripsi */
-#download-modal p {
-    color: #222121 !important;
-    margin-bottom: 20px;
-}
-/* Efek Hover secara umum untuk tombol di dalam modal */
-#download-modal .tab-btn {
-    transition: all 0.3s ease; /* Membuat transisi perubahan terasa halus */
-    cursor: pointer;
-    border: none;
-    transform: scale(1);
-}
-
-#download-modal .tab-btn:hover {
-    transform: scale(1.03); /* Sedikit membesar saat disentuh */
-    filter: brightness(1.1); /* Membuat warna sedikit lebih terang */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Menambahkan bayangan lembut */
-}
-
-/* Hover khusus tombol Sapi (Hijau) */
-#download-modal .tab-btn.active:nth-child(1):hover {
-    background-color: #388e3c !important; /* Hijau lebih gelap */
-}
-
-/* Hover khusus tombol Kambing (Cokelat) */
-#download-modal .tab-btn[style*="background:#6d4c41"]:hover {
-    background-color: #5d4037 !important; /* Cokelat lebih gelap */
-}
-
-/* Hover tombol Batal */
-#download-modal .tab-btn[style*="background:#cfd8dc"] {
-    background-color: #eeeeee !important; /* Abu-abu sangat muda */
-    color: #333 !important;
-    border: 1px solid #ccc !important;
-}
+/* Page Control */
 .page { display: none; }
 .page.active { display: block; }

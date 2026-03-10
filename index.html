@@ -5,134 +5,109 @@
     <title>CARING 0.3 | Smart Monitoring</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <link rel="stylesheet" href="style.css">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="loader-wrapper">
-        <img src="image/logo.png" alt="Caring Logo" width="450">
-        <div class="loader-bar-container">
-            <div class="loader-bar"></div>
+<div id="loader-wrapper">
+    <img src="logo.png" width="80" onerror="this.style.display='none'">
+    <div class="loader-bar-container">
+        <div class="loader-bar"></div>
+    </div>
+</div>
+
+<div class="container" id="main-container">
+
+    <div class="header glass">
+        <img src="logo.png" width="50" onerror="this.style.display='none'">
+        <div class="brand-title">CARING 0.3</div>
+        <div id="clock"></div>
+    </div>
+
+    <div class="nav-tabs">
+        <button id="btn-home" class="tab-btn active" onclick="switchPage('home',this)">🏠 Home</button>
+        <button id="btn-list" class="tab-btn" onclick="switchPage('list',this)">📋 Daftar</button>
+        <button id="btn-monitor" class="tab-btn" onclick="switchPage('rt',this)" disabled style="opacity:0.5">📊 Monitor</button>
+        <button id="btn-history" class="tab-btn" onclick="switchPage('hs',this)">📜 Riwayat</button>
+    </div>
+
+    <div id="home" class="page active">
+        <div class="glass">
+            <h3 style="margin-top:0;">🐄🐐 CARING – Cerdas Awasi, Cepat Diagnosa</h3>
+            <p>Sistem monitoring pintar untuk mendeteksi dini penyakit ternak berdasarkan tanda vital real-time.</p>
+            <p>Parameter: 🌡️ <b>Suhu</b>, 🫁 <b>Pernapasan</b>, dan 🐾 <b>Aktivitas</b>.</p>
+            <button class="tab-btn active" style="width:100%; margin-top:10px;" onclick="switchPage('list',document.getElementById('btn-list'))">Mulai Monitoring →</button>
         </div>
     </div>
 
-    <div id="verify-modal">
-        <div class="modal-content glass">
-            <h3>Ubah Pantauan</h3>
-            <p id="verify-text">Pilih hewan...</p>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button class="tab-btn" style="background:#cfd8dc; flex:1" onclick="closeModal()">Batal</button>
-                <button class="tab-btn active" style="flex:1" id="confirm-btn">Ya</button>
-            </div>
+    <div id="list" class="page">
+        <div class="glass">
+            <input type="text" id="input-nama" class="input-box" placeholder="Nama Hewan (Contoh: Sapi 01)">
+            <select id="input-jenis" class="input-box">
+                <option>SAPI</option>
+                <option>KAMBING</option>
+            </select>
+            <button class="tab-btn active" style="width:100%;" onclick="addAnimal()">➕ Tambah Hewan</button>
+        </div>
+        <div class="glass">
+            <div id="container-hewan"></div>
         </div>
     </div>
 
-    <div class="container" id="main-container">
-        <div class="header glass">
-         
-            <img src="image/logo.png" alt="Logo" class="header-logo">
-            <div class="brand-name">CARING 0.3</div>
-            <div id="date-display">-</div>
-            <div id="clock">00:00:00</div>
-        </div>
-
-        <div class="nav-tabs">
-            <button id="btn-home" class="tab-btn active" onclick="switchPage('home',this)">🏠 Home</button>
-            <button id="btn-monitor" class="tab-btn" onclick="switchPage('rt',this)">📊 Monitor</button>
-            <button id="btn-history" class="tab-btn" onclick="switchPage('hs',this)">📜 Riwayat</button>
-        </div>
-
-        <div id="home" class="page active">
-            <div class="glass">
-                <div class="home-title">🐄 CARING</div>
-                <div class="home-subtitle">Smart Livestock Health Monitoring System</div>
-                <div class="home-tagline">Solusi Cerdas Deteksi Dini Penyakit Ternak Berbasis IoT</div>
-                <p class="home-desc">
-                    <b>CARING</b> hadir sebagai inovasi sistem monitoring kesehatan ternak yang mampu mendeteksi gejala penyakit sejak tahap awal melalui pemantauan suhu tubuh, aktivitas gerak, dan intensitas pernapasan secara real-time.
-                </p>
-                <ul class="feature-list">
-                    <li>✅ Monitoring Real-Time IoT</li>
-                    <li>✅ Deteksi Dini Gejala Penyakit</li>
-                    <li>✅ Pemantauan Suhu, Aktivitas & Suara</li>
-                    <li>✅ Analisis Data Akurat</li>
-                </ul>
-                <button class="tab-btn active btn-start" onclick="goToMonitor()">Mulai Pemantauan Ternak →</button>
+    <div id="rt" class="page">
+        <div class="monitor-header glass">
+            <div class="battery-container">
+                <span>SENSOR BATTERY:</span>
+                <div class="battery-shell">
+                    <div id="bat-level" class="battery-level"></div>
+                </div>
+                <span id="bat-text">100%</span>
             </div>
+            <b id="active-name">--</b>
         </div>
-
-      <div id="rt" class="page">
-    <div id="setup-monitor" class="glass" style="padding: 20px; text-align: center;">
-        <h3>Konfigurasi Monitor Baru</h3>
-        <p>Pilih jenis dan beri nama hewan di kandang:</p>
-        
-        <div class="selection" style="justify-content: center; margin-bottom: 20px;">
-            <div class="animal active" id="setup-SAPI" onclick="selectType('SAPI')">
-                <img src="https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&w=150&q=80">
-                <div class="animal-label">SAPI</div>
-            </div>
-            <div class="animal" id="setup-KAMBING" onclick="selectType('KAMBING')">
-                <img src="https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&w=150&q=80">
-                <div class="animal-label">KAMBING</div>
-            </div>
-        </div>
-
-        <input type="text" id="input-nama-hewan" placeholder="Contoh: Sapi A / Si Putih" 
-               style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 15px;">
-        
-        <button class="tab-btn active" style="width: 100%;" onclick="startMonitoringSession()">Buka Monitor Sekarang</button>
-    </div>
-
-    <div id="active-monitor" style="display: none;">
-        <div class="glass" style="padding: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <b id="display-nama">--</b> 
-                <span id="display-jenis" style="font-size: 0.8rem; opacity: 0.7;">(Jenis)</span>
-            </div>
-            <button onclick="resetMonitor()" style="font-size: 0.7rem; background: #ff5252; color: white; border: none; padding: 5px 10px; border-radius: 5px;">Ganti Hewan</button>
-        </div>
-
-        <div class="time-info">🕒 Waktu Efektif: 06-07, 12-13, 18-19</div>
         
         <div class="card glass"><span>🌡️ SUHU</span><span class="value" id="suhu">--</span></div>
-        <div class="card glass"><span>🏃 AKTIVITAS</span><span class="value" id="aktivitas">--</span></div>
-        <div class="card glass"><span>🔊 SUARA</span><span class="value" id="suara">--</span></div>
-        <div id="status" class="status standby">MENUNGGU DATA...</div>
-
-        <div id="diagnosis" class="diag-box">
-            <b>Diagnosa:</b> <span id="diag-text">Memproses data...</span>
+        <div class="card glass"><span>🫁 PERNAPASAN</span><span class="value" id="pernapasan">--</span></div>
+        <div class="card glass activity-card">
+            <span>🐾 AKTIVITAS</span>
+            <div class="value-row">
+                <span>Skor Saat Ini:</span>
+                <span class="value" id="aktivitas">--</span>
+            </div>
+        </div>
+        
+        <div id="status-bar" class="status">MENUNGGU DATA...</div>
+        
+        <div id="diag-display" class="diag-box normal-bg">
+            <b>Analisis Diagnosa:</b><br>
+            <span id="diag-text">Menunggu data sensor...</span><br>
+            <small id="diag-reason"></small>
         </div>
     </div>
-</div>
 
-      <div id="hs" class="page glass">
-    <h3 style="margin-top:0; font-size: 14px;">Rekapan Data (Waktu Efektif)</h3>
-    <div class="table-scroll">
-        <table id="history-table">
-            <thead>
-                <tr><th>Waktu</th><th>Suhu</th><th>Akt</th><th>Suara</th><th>Hewan</th></tr>
-            </thead>
-            <tbody id="history"></tbody>
-        </table>
-    </div>
-    <button onclick="openDownloadModal()" class="tab-btn active btn-download">📄 Download Laporan PDF</button>
-</div>
-
-<div id="download-modal" class="modal" style="display:none;">
-    <div class="modal-content glass">
-        <h3>Pilih Jenis Laporan</h3>
-        <p>Data mana yang ingin Anda unduh?</p>
-        <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
-            <button class="tab-btn active" onclick="exportToPDF('SAPI')">🐄 Laporan Sapi</button>
-            <button class="tab-btn active" style="background:#6d4c41;" onclick="exportToPDF('KAMBING')">🐐 Laporan Kambing</button>
-            <button class="tab-btn" style="background:#cfd8dc;" onclick="closeDownloadModal()">Batal</button>
+    <div id="hs" class="page glass">
+        <h3>📜 Riwayat Pantauan (Per 10 Menit)</h3>
+        <div class="export-group">
+            <button class="btn-export bg-excel" onclick="exportData('excel')">📗 Excel</button>
+            <button class="btn-export bg-pdf" onclick="exportData('pdf')">📕 PDF</button>
+            <button class="btn-export bg-reset" onclick="hapusRiwayat()">🗑️ Reset</button>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="history-table" id="table-history">
+                <thead>
+                    <tr><th>Waktu</th><th>Hewan</th><th>Suhu</th><th>Diagnosa</th></tr>
+                </thead>
+                <tbody id="history-rows"></tbody>
+            </table>
         </div>
     </div>
+
 </div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
