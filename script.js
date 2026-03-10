@@ -1,38 +1,51 @@
+// 1. Inisialisasi - Gunakan nama variabel 'supabaseClient' agar tidak bentrok
+const SUPABASE_URL = 'https://ogxmrurivcojvzljawdp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_39SkbrQNVRGGD4K6iRhWww_IdeZKYXS'; // Pastikan Anon Key benar
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 let animals = JSON.parse(localStorage.getItem('caring_v3_data') || '[]');
 let historyData = JSON.parse(localStorage.getItem('caring_history') || '[]');
 let selectedAnimal = null;
-let intervalSensor = null;
 let batPercent = 100;
 let lastSaveTime = 0;
 
-// Tambahkan library di index.html
-// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-const supabase = supabase.createClient('https://ogxmrurivcojvzljawdp.supabase.co', 'sb_publishable_39SkbrQNVRGGD4K6iRhWww_IdeZKYXS');
-
-// Fungsi untuk ambil data dari Supabase secara Realtime
+// 2. Fungsi Realtime Supabase
 function listenToHardware() {
-    supabase
+    console.log("Menghubungkan ke Realtime Supabase...");
+    
+    supabaseClient
       .channel('sensor_updates')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'monitoring_ternak' }, payload => {
+      .on('postgres_changes', { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'monitoring_ternak' 
+      }, payload => {
           const data = payload.new;
+          console.log("Data diterima:", data);
           
-          // Update UI CARING dengan data asli dari sensor
+          // Update UI dengan data asli dari database
           document.getElementById('suhu').innerText = data.suhu_objek + " °C";
           document.getElementById('aktivitas').innerText = data.skor_aktivitas;
           document.getElementById('pernapasan').innerText = data.laju_napas;
           
+          // Simulasi Baterai (Visual)
+          if (batPercent > 5) batPercent -= 0.1;
+          document.getElementById('bat-level').style.width = batPercent + "%";
+          document.getElementById('bat-text').innerText = Math.round(batPercent) + "%";
+
           // Jalankan diagnosa otomatis
-          diagnosa(data.suhu_objek, data.skor_aktivitas, data.laju_napas);
+          diagnosa(parseFloat(data.suhu_objek), data.skor_aktivitas, data.laju_napas);
       })
       .subscribe();
 }
 
-// Initialize App
+// 3. Initialize App
 window.onload = () => {
     setTimeout(() => {
-        document.getElementById('loader-wrapper').style.display = 'none';
-        document.getElementById('main-container').classList.add('loaded');
+        const loader = document.getElementById('loader-wrapper');
+        const container = document.getElementById('main-container');
+        if(loader) loader.style.display = 'none';
+        if(container) container.classList.add('loaded');
         renderList(); 
         renderHistory();
     }, 1500);
@@ -40,7 +53,8 @@ window.onload = () => {
 
 // Clock Function
 setInterval(() => { 
-    document.getElementById("clock").innerText = new Date().toLocaleString("id-ID"); 
+    const clock = document.getElementById("clock");
+    if(clock) clock.innerText = new Date().toLocaleString("id-ID"); 
 }, 1000);
 
 // Page Navigation
@@ -73,6 +87,7 @@ function deleteAnimal(id, e) {
 
 function renderList() {
     let container = document.getElementById('container-hewan');
+    if(!container) return;
     container.innerHTML = animals.length === 0 ? "<small>Belum ada hewan terdaftar.</small>" : "";
     
     animals.forEach(a => {
@@ -96,26 +111,8 @@ function startMonitor(nama) {
     
     switchPage('rt', btnMonitor);
     
-    if (intervalSensor) clearInterval(intervalSensor);
-    intervalSensor = setInterval(generateSensor, 3000);
-}
-
-function generateSensor() {
-    let s = (Math.random() * 3 + 37.5).toFixed(1);
-    let a = Math.floor(Math.random() * 100);
-    let p = Math.floor(Math.random() * 100);
-
-    // Battery simulation
-    if (batPercent > 5) batPercent -= 0.2;
-    document.getElementById('bat-level').style.width = batPercent + "%";
-    document.getElementById('bat-text').innerText = Math.round(batPercent) + "%";
-
-    // Display values
-    document.getElementById('suhu').innerText = s + " °C";
-    document.getElementById('aktivitas').innerText = a;
-    document.getElementById('pernapasan').innerText = p;
-
-    diagnosa(parseFloat(s), a, p);
+    // Mulai mendengarkan data dari hardware melalui Supabase
+    listenToHardware();
 }
 
 function diagnosa(s, a, p) {
@@ -124,7 +121,6 @@ function diagnosa(s, a, p) {
     let alasan = "Tanda vital terpantau stabil.";
     let statusBar = document.getElementById('status-bar');
 
-    // Simple Rule Engine
     if (s >= 40 && a < 40 && p > 60) {
         hasil = "Indikasi PMK";
         alasan = "Demam tinggi, aktivitas rendah, napas cepat. Cek area mulut/kuku.";
@@ -138,7 +134,6 @@ function diagnosa(s, a, p) {
 
     if (hasil !== "Normal") status = "SAKIT";
     
-    // UI Update for Status
     statusBar.innerText = status;
     if (status === "SAKIT") {
         statusBar.style.background = "#ff4646";
@@ -153,7 +148,6 @@ function diagnosa(s, a, p) {
     document.getElementById('diag-text').innerText = hasil;
     document.getElementById('diag-reason').innerText = alasan;
 
-    // Auto Save Logic (Every 10 Minutes)
     let now = Date.now();
     if (now - lastSaveTime > 600000) {
         saveHistory(s, hasil);
@@ -161,7 +155,7 @@ function diagnosa(s, a, p) {
     }
 }
 
-// History & Export
+// History & Export tetap sama
 function saveHistory(suhu, diag) {
     let data = {
         waktu: new Date().toLocaleString("id-ID", {day:'2-digit', month:'2-digit', hour: '2-digit', minute:'2-digit'}),
@@ -177,6 +171,7 @@ function saveHistory(suhu, diag) {
 
 function renderHistory() {
     let rows = document.getElementById('history-rows');
+    if(!rows) return;
     rows.innerHTML = "";
     historyData.forEach(d => {
         rows.innerHTML += `<tr><td>${d.waktu}</td><td>${d.hewan}</td><td>${d.suhu}</td><td>${d.diagnosa}</td></tr>`;
