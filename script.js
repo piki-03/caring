@@ -8,7 +8,7 @@ let lastSaveTime = 0;
 // Tambahkan library di index.html
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-const supabase = supabase.createClient('URL_SUPABASE_ANDA', 'KEY_ANON_ANDA');
+const supabase = supabase.createClient('https://ogxmrurivcojvzljawdp.supabase.co', 'sb_publishable_39SkbrQNVRGGD4K6iRhWww_IdeZKYXS');
 
 // Fungsi untuk ambil data dari Supabase secara Realtime
 function listenToHardware() {
