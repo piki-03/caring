@@ -23,7 +23,7 @@ body {
 }
 
 #loader-wrapper img {
-    width: 120px; /* Ubah angka ini untuk memperbesar/memperkecil logo */
+    width: 400px; /* Ubah angka ini untuk memperbesar/memperkecil logo */
     height: auto;
     margin-bottom: 30px; /* Jarak antara logo dengan loading bar biru */
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); /* Tambah bayangan halus */
