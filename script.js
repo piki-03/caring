@@ -149,7 +149,7 @@ function diagnosa(s, a, p) {
     document.getElementById('diag-reason').innerText = alasan;
 
     let now = Date.now();
-    if (now - lastSaveTime > 600000) {
+    if (now - lastSaveTime > 15000) {
         saveHistory(s, hasil);
         lastSaveTime = now;
     }
