@@ -15,7 +15,6 @@ body {
     font-family: 'Segoe UI', sans-serif; 
     color: var(--text-dark); 
     background: #e1f5fe;
-    background-image: linear-gradient(rgba(225,245,254,0.9),rgba(225,245,254,0.9)), url('logo.png');
     background-repeat: no-repeat; 
     background-position: center; 
     background-attachment: fixed; 
